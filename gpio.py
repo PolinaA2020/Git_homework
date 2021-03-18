@@ -66,28 +66,65 @@ def lightNumber(number):
         GPIO.output(i, 0)
 ############################################################################
 def runningPattern(pattern, direction):
-    #arr = decToBinList(pattern)
-    #for j in range(10):
-        #for i in range(8):
-            #if arr[i]:
-                #lightUp(chan_list[i], 1)
-      #  arr = move_array(direction, 1)   
-    for i in range(10):
-        lightNumber(pattern)
-        if direction:
-            pattern = pattern >> 1
-        else:
-            pattern = pattern << 1
+    arr = decToBinList(pattern)
+    for j in range(13):
+        for i in range(8):
+            if arr[i]:
+                GPIO.output(chan_list[i], 1)
+        time.sleep(1)
+        for i in range(8):
+            if arr[i]:
+                GPIO.output(chan_list[i], 0)
+        arr = move_array(arr, direction, 1)
 ############################################################################        
+def move_array(arr, direction, steps):
+    print(arr)
+    array = np.zeros(8)
+    if direction:
+        for i in range(7):
+            array[i + 1] = arr[i]
+        array[0] = arr[7]
+    else:
+        for i in range(7):
+            array[i] = arr[i + 1]
+        array[7] = arr[0]
+    #if direction:
+       # for i in range(7):
+           # temp = arr[i + 1]
+          #  arr[i + 1] = arr[i]
+       # arr[0] = temp
+    #else:
+       # temp = arr[0]
+       # for i in range(7):
+         #   arr[7 - i + 7] = arr[7 - i]
+       # arr[7] = temp
+    print(array)
+    return array
+##################################################################################
+def SlowMotion(ledNumber, count):
+    p = GPIO.PWM(chan_list[7 - ledNumber], 50)
+    p.start(0)
+    for i in range(count):
+        for dc in range(0, 101, 5):
+            p.ChangeDutyCycle(dc)
+            time.sleep(0.01)
+        for dc in range(100, -1, -5):
+            p.ChangeDutyCycle(dc)
+            time.sleep(0.01)
 
-#runningPattern(6, 0)
+    p.stop()
+##################################################################################
+
+
+SlowMotion(3, 2)
+#runningPattern(6, 1)
 #lightUp(chan_list[3], 1)
 #blink(7, 2, 1)
 #runningLight(2, 1)
 #runningDark(2, 1)
-print(decToBinList(5))
-print(bin(5))
-lightNumber(5)
+#print(decToBinList(5))
+#print(bin(5))
+#lightNumber(5)
 #runningPattern(6, 0)
 
 GPIO.cleanup()
